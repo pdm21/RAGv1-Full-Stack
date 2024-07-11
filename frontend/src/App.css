@@ -50,6 +50,7 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
+  text-align: center;
 }
 
 .upload-section {
