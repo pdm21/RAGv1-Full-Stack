@@ -1,9 +1,11 @@
-from fastapi import FastAPI, UploadFile, File
+import subprocess
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import boto3
 import os
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 from dotenv import load_dotenv
+from pydantic import BaseModel
 
 load_dotenv()
 
@@ -70,6 +72,36 @@ async def upload_file(file: UploadFile = File(...)):
         return {"error": "Incomplete credentials provided"}
     except Exception as e:
         return {"error": str(e)}
+
+@app.post("/populate_db/")
+async def populate_db(reset: bool = False):
+    try:
+        command = ["python3", "backend/pop_db.py"]
+        if reset:
+            command.append("--reset")
+
+        result = subprocess.run(command, capture_output=True, text=True)
+        if result.returncode != 0:
+            return {"error": result.stderr}
+
+        return {"info": result.stdout}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+class QueryRequest(BaseModel):
+    query: str
+
+@app.post("/query/")
+async def query(request: QueryRequest):
+    try:
+        command = ["python3", "query.py", request.query]
+        result = subprocess.run(command, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise HTTPException(status_code=500, detail=result.stderr)
+        return {"response": result.stdout}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

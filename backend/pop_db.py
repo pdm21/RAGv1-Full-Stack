@@ -1,6 +1,8 @@
 import argparse
 import os
 import shutil
+import boto3
+from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFDirectoryLoader  # Updated import
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema import Document
@@ -9,6 +11,22 @@ from langchain_community.vectorstores import Chroma  # Updated import
 
 CHROMA_PATH = "chroma"
 DATA_PATH = "data"
+
+# Load environment variables
+load_dotenv()
+
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_REGION = os.getenv('AWS_REGION')
+AWS_S3_BUCKET_NAME = os.getenv('AWS_S3_BUCKET_NAME')
+
+# Initialize boto3 client
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    region_name=AWS_REGION
+)
 
 def main():
 
@@ -20,10 +38,24 @@ def main():
         print("✨ Clearing Database")
         clear_database()
 
+    # Download documents from S3
+    download_documents_from_s3()
+
     # Create (or update) the data store
     documents = load_documents()
     chunks = split_documents(documents)
     add_to_chroma(chunks)
+
+def download_documents_from_s3():
+    if not os.path.exists(DATA_PATH):
+        os.makedirs(DATA_PATH)
+
+    response = s3_client.list_objects_v2(Bucket=AWS_S3_BUCKET_NAME)
+    for obj in response.get('Contents', []):
+        file_name = obj['Key']
+        local_file_path = os.path.join(DATA_PATH, file_name)
+        s3_client.download_file(AWS_S3_BUCKET_NAME, file_name, local_file_path)
+        print(f"Downloaded {file_name} from S3 to {local_file_path}")
 
 def load_documents():
     document_loader = PyPDFDirectoryLoader(DATA_PATH)
@@ -98,6 +130,9 @@ def calculate_chunk_ids(chunks):
 def clear_database():
     if os.path.exists(CHROMA_PATH):
         shutil.rmtree(CHROMA_PATH)
+
+if os.path.exists(DATA_PATH):
+        shutil.rmtree(DATA_PATH)
 
 if __name__ == "__main__":
     main()
