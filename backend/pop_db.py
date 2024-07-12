@@ -31,12 +31,12 @@ s3_client = boto3.client(
 def main():
 
     # Check if the database should be cleared (using the --clear flag)
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--reset", action="store_true", help="Reset the database.")
-    args = parser.parse_args()
-    if args.reset:
-        print("✨ Clearing Database")
-        clear_database()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("--reset", action="store_true", help="Reset the database.")
+    # args = parser.parse_args()
+    # if args.reset:
+    #     print("✨ Clearing Database")
+    #     clear_database()
 
     # Download documents from S3
     download_documents_from_s3()
@@ -131,8 +131,8 @@ def clear_database():
     if os.path.exists(CHROMA_PATH):
         shutil.rmtree(CHROMA_PATH)
 
-if os.path.exists(DATA_PATH):
-        shutil.rmtree(DATA_PATH)
+    if os.path.exists(DATA_PATH):
+            shutil.rmtree(DATA_PATH)
 
 if __name__ == "__main__":
     main()

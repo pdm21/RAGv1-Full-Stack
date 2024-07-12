@@ -76,9 +76,9 @@ async def upload_file(file: UploadFile = File(...)):
 @app.post("/populate_db/")
 async def populate_db(reset: bool = False):
     try:
-        command = ["python3", "backend/pop_db.py"]
-        if reset:
-            command.append("--reset")
+        command = ["python3", "pop_db.py"]
+        # if reset:
+        #     command.append("--reset")
 
         result = subprocess.run(command, capture_output=True, text=True)
         if result.returncode != 0:

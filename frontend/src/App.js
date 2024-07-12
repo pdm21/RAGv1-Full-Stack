@@ -39,7 +39,7 @@ function App() {
         setFiles([]); // Clear files after upload
 
         // Populate the database
-        await api.post("/populate_db/", { reset: true });
+        await api.post("/populate_db/", { reset: false });
       } catch (error) {
         console.error("Error uploading file:", error);
       }
