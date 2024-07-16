@@ -32,7 +32,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -77,8 +77,6 @@ async def upload_file(file: UploadFile = File(...)):
 async def populate_db(reset: bool = False):
     try:
         command = ["python3", "pop_db.py"]
-        # if reset:
-        #     command.append("--reset")
 
         result = subprocess.run(command, capture_output=True, text=True)
         if result.returncode != 0:
@@ -102,6 +100,24 @@ async def query(request: QueryRequest):
         return {"response": result.stdout}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+"""
+Experimental: Post API Request to Clear DB, Clear S3
+See clearfiles.py file for code.
+See AWS docs here: https://docs.aws.amazon.com/AmazonS3/latest/userguide/DeletingObjects.html
+"""
+@app.post("/clearfiles/")
+async def clearfiles():
+    try:
+        command = ["python3", "clearfiles.py"]
+
+        result = subprocess.run(command, capture_output=True, text=True)
+        if result.returncode != 0:
+            return {"error": result.stderr}
+
+        return {"info": result.stdout}
+    except Exception as e:
+        return {"error": str(e)}
 
 if __name__ == "__main__":
     import uvicorn

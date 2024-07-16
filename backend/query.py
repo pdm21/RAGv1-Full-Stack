@@ -41,6 +41,12 @@ def query_rag(query_text: str):
     model = Ollama(model="mistral")
     response_text = model.invoke(prompt)
 
+    
+    # Source Adjustments:
+    # - add footnotes
+    # - cite footnotes at the bottom
+    # - maybe do not cite the entire source, or at least leave some space
+    
     sources = [doc.metadata.get("id", None) for doc, _score in results]
     formatted_response = f"Response: {response_text}\nSources: {sources}"
     print(formatted_response)
