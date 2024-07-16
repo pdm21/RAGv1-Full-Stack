@@ -132,3 +132,31 @@
   margin-top: 10px;
   border-radius: 10px;
 }
+
+.response-section {
+  overflow-y: auto;
+  max-height: 400px;
+  padding: 50px;
+  /* border: 1px solid #ccc; */
+  color: #1c1c1e;
+}
+
+.query-response {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.query {
+  background-color: #d1e7dd; /* Light green for queries */
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.response {
+  background-color: #f9f9f9; /* Light grey for responses */
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}

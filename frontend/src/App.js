@@ -6,7 +6,8 @@ function App() {
   const [files, setFiles] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [query, setQuery] = useState("");
-  const [response, setResponse] = useState("");
+  // const [response, setResponse] = useState("");
+  const [messages, setMessages] = useState([]); // state to keep track of conversation history
 
   const handleFileUpload = (event) => {
     const uploadedFiles = Array.from(event.target.files);
@@ -25,7 +26,7 @@ function App() {
     if (files.length > 0) {
       const formData = new FormData();
       files.forEach((file) => {
-        formData.append("file", file);
+        formData.append("files", file);
       });
 
       try {
@@ -49,7 +50,12 @@ function App() {
   const handleQuery = async () => {
     try {
       const response = await api.post("/query/", { query });
-      setResponse(response.data.response || response.data.error);
+      // setResponse(response.data.response || response.data.error);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { query, response: response.data.response || response.data.error },
+      ]);
+      setQuery(""); // clear the query input after submitting
     } catch (error) {
       console.error("Error fetching query:", error);
     }
@@ -61,7 +67,7 @@ a) Check what HTTP operations is warranted (post, put, etc)
   const handleClear = async () => {
     try {
       const response = await api.post("/clearfiles/");
-      setResponse(response.data.response || response.data.error);
+      setMessages([]);
     } catch (error) {
       console.error("Error clearing database and S3:", error);
     }
@@ -101,18 +107,32 @@ a) Check what HTTP operations is warranted (post, put, etc)
         <button classname="clear-button" onClick={handleClear}>
           Clear
         </button>
-        {/* 
-          Comment:
-          Check YouTube example for how to have as many queries as the user wants.
-          Loop of some sort? Or, only one query / response, but for every new,
-          store into a local variable and print under?
-        */}
-        <div className="response-section">
+
+        {/* <div className="response-section">
           {response && (
             <div className="query-response">
               <p>{response}</p>
             </div>
           )}
+        </div> */}
+        <div
+          className="response-section"
+          style={{ overflowY: "scroll", height: "400px" }}
+        >
+          {messages.map((message, index) => (
+            <div key={index} className="query-response">
+              <div className="query">
+                <p>
+                  <strong>Q:</strong> {message.query}
+                </p>
+              </div>
+              <div className="response">
+                <p>
+                  <strong>A:</strong> {message.response}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
       <div className="info-icon" onClick={toggleModal}>

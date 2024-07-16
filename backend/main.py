@@ -6,6 +6,8 @@ import os
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 from dotenv import load_dotenv
 from pydantic import BaseModel
+from typing import List
+
 
 load_dotenv()
 
@@ -55,23 +57,46 @@ async def get_all_files():
         return {"error": str(e)}
 
 @app.post("/uploadfile/")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(files: List[UploadFile] = File(...)):
     try:
-        # Print file details for debugging
-        print(f"File received: filename={file.filename}, content_type={file.content_type}")
+        # Iterate over each file and upload it to S3
+        for file in files:
+            # Print file details for debugging
+            print(f"File received: filename={file.filename}, content_type={file.content_type}")
 
-        # Check if file.file is not None
-        if file.file:
-            s3_client.upload_fileobj(file.file, AWS_S3_BUCKET_NAME, file.filename)
-            return {"info": f"file '{file.filename}' saved at '{AWS_S3_BUCKET_NAME}'"}
-        else:
-            return {"error": "File object is None"}
+            # Check if file.file is not None
+            if file.file:
+                s3_client.upload_fileobj(file.file, AWS_S3_BUCKET_NAME, file.filename)
+            else:
+                return {"error": f"File object for {file.filename} is None"}
+
+        return {"info": "All files have been uploaded successfully."}
     except NoCredentialsError:
         return {"error": "Credentials not available"}
     except PartialCredentialsError:
         return {"error": "Incomplete credentials provided"}
     except Exception as e:
         return {"error": str(e)}
+
+# @app.post("/uploadfile/")
+# async def upload_file(file: UploadFile = File(...)):
+#     try:
+#         # Print file details for debugging
+#         print(f"File received: filename={file.filename}, content_type={file.content_type}")
+
+#         # Check if file.file is not None
+#         if file.file:
+#             s3_client.upload_fileobj(file.file, AWS_S3_BUCKET_NAME, file.filename)
+#             return {"info": f"file '{file.filename}' saved at '{AWS_S3_BUCKET_NAME}'"}
+#         else:
+#             return {"error": "File object is None"}
+#     except NoCredentialsError:
+#         return {"error": "Credentials not available"}
+#     except PartialCredentialsError:
+#         return {"error": "Incomplete credentials provided"}
+#     except Exception as e:
+#         return {"error": str(e)}
+    
 
 @app.post("/populate_db/")
 async def populate_db(reset: bool = False):
