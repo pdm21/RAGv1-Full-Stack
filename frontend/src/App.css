@@ -203,7 +203,7 @@ body {
 }
 
 .query {
-  background-color: #7ac5f0; /* Light blue for queries */
+  background-color: rgb(166, 191, 192);
   padding: 10px;
   border-radius: 4px;
   margin-bottom: 5px;

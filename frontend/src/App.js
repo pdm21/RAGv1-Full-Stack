@@ -49,15 +49,34 @@ function App() {
   const handleQuery = async () => {
     try {
       const response = await api.post("/query/", { query });
+      const responseText = response.data.response || response.data.error;
+
+      // Splitting the response by "Sources: "
+      const splitIndex = responseText.indexOf("Sources:");
+      const mainResponse = responseText.substring(0, splitIndex);
+      const sources = responseText.substring(splitIndex);
+
       setMessages((prevMessages) => [
         ...prevMessages,
-        { query, response: response.data.response || response.data.error },
+        { query, mainResponse, sources, showSources: false },
       ]);
       setQuery(""); // clear the query input after submitting
     } catch (error) {
       console.error("Error fetching query:", error);
     }
   };
+  // const handleQuery = async () => {
+  //   try {
+  //     const response = await api.post("/query/", { query });
+  //     setMessages((prevMessages) => [
+  //       ...prevMessages,
+  //       { query, response: response.data.response || response.data.error },
+  //     ]);
+  //     setQuery(""); // clear the query input after submitting
+  //   } catch (error) {
+  //     console.error("Error fetching query:", error);
+  //   }
+  // };
 
   const handleClear = async () => {
     try {
@@ -129,12 +148,51 @@ function App() {
               </div>
               <div className="response">
                 <p>
-                  <strong>A:</strong> {message.response}
+                  <strong>A:</strong> <span>{message.mainResponse}</span>
                 </p>
+                {message.sources && (
+                  <div>
+                    {message.showSources ? (
+                      <div>
+                        <p
+                          dangerouslySetInnerHTML={{
+                            __html: message.sources.replace(/\n/g, "<br>"),
+                          }}
+                        />
+                        <button
+                          onClick={() =>
+                            setMessages((prevMessages) =>
+                              prevMessages.map((msg, i) =>
+                                i === index
+                                  ? { ...msg, showSources: false }
+                                  : msg
+                              )
+                            )
+                          }
+                        >
+                          Hide Sources
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() =>
+                          setMessages((prevMessages) =>
+                            prevMessages.map((msg, i) =>
+                              i === index ? { ...msg, showSources: true } : msg
+                            )
+                          )
+                        }
+                      >
+                        <em>See Sources</em>
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
+
         <div className="clear-button-div">
           <button className="clear-button" onClick={handleClear}>
             Clear

@@ -48,7 +48,7 @@ def query_rag(query_text: str):
     # - maybe do not cite the entire source, or at least leave some space
     
     sources = [doc.metadata.get("id", None) for doc, _score in results]
-    formatted_response = f"Response: {response_text}\nSources: {sources}"
+    formatted_response = f"{response_text}\n\nSources: {sources}"
     print(formatted_response)
     return response_text
 
