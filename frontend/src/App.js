@@ -54,7 +54,15 @@ function App() {
       // Splitting the response by "Sources: "
       const splitIndex = responseText.indexOf("Sources:");
       const mainResponse = responseText.substring(0, splitIndex);
-      const sources = responseText.substring(splitIndex);
+      let sources = responseText.substring(splitIndex);
+
+      // Format the sources string
+      sources = sources.replace("Sources:", "");
+      sources = sources.replace(/\['|'\]/g, "").replace(/', '/g, "\n");
+      sources = sources
+        .split("\n")
+        .map((source) => source.replace("data/", ""))
+        .filter((source) => source.trim() !== "");
 
       setMessages((prevMessages) => [
         ...prevMessages,
@@ -65,18 +73,6 @@ function App() {
       console.error("Error fetching query:", error);
     }
   };
-  // const handleQuery = async () => {
-  //   try {
-  //     const response = await api.post("/query/", { query });
-  //     setMessages((prevMessages) => [
-  //       ...prevMessages,
-  //       { query, response: response.data.response || response.data.error },
-  //     ]);
-  //     setQuery(""); // clear the query input after submitting
-  //   } catch (error) {
-  //     console.error("Error fetching query:", error);
-  //   }
-  // };
 
   const handleClear = async () => {
     try {
@@ -148,45 +144,43 @@ function App() {
               </div>
               <div className="response">
                 <p>
-                  <strong>A:</strong> <span>{message.mainResponse}</span>
+                  <strong>A:</strong> {message.mainResponse}
                 </p>
-                {message.sources && (
-                  <div>
-                    {message.showSources ? (
-                      <div>
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: message.sources.replace(/\n/g, "<br>"),
-                          }}
-                        />
-                        <button
-                          onClick={() =>
-                            setMessages((prevMessages) =>
-                              prevMessages.map((msg, i) =>
-                                i === index
-                                  ? { ...msg, showSources: false }
-                                  : msg
-                              )
-                            )
-                          }
-                        >
-                          Hide Sources
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() =>
-                          setMessages((prevMessages) =>
-                            prevMessages.map((msg, i) =>
-                              i === index ? { ...msg, showSources: true } : msg
-                            )
-                          )
-                        }
-                      >
-                        <em>See Sources</em>
-                      </button>
-                    )}
+                {message.showSources && (
+                  <div className="sources">
+                    <p>
+                      <strong>Sources (Page / Chunk):</strong>
+                    </p>
+                    <ol>
+                      {message.sources.map((source, i) => (
+                        <li key={i}>{source}</li>
+                      ))}
+                    </ol>
+                    <button
+                      onClick={() => {
+                        setMessages((prevMessages) => {
+                          const newMessages = [...prevMessages];
+                          newMessages[index].showSources = false;
+                          return newMessages;
+                        });
+                      }}
+                    >
+                      Hide Sources
+                    </button>
                   </div>
+                )}
+                {!message.showSources && (
+                  <button
+                    onClick={() => {
+                      setMessages((prevMessages) => {
+                        const newMessages = [...prevMessages];
+                        newMessages[index].showSources = true;
+                        return newMessages;
+                      });
+                    }}
+                  >
+                    <em>See Sources</em>
+                  </button>
                 )}
               </div>
             </div>

@@ -233,3 +233,11 @@ body {
   align-items: center;
   display: flex;
 }
+.sources ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.sources li {
+  margin-bottom: 5px;
+}
