@@ -1,8 +1,13 @@
+body {
+  margin: 0;
+  font-family: "Arial", sans-serif;
+  background-color: #121212;
+  color: #ffffff;
+}
+
 .app {
   display: flex;
   height: 100vh;
-  color: white;
-  background-color: #1c1c1e;
   position: relative;
 }
 
@@ -12,7 +17,6 @@
   right: 10px;
   cursor: pointer;
   font-size: 24px;
-  color: white;
 }
 
 .modal {
@@ -28,16 +32,16 @@
 }
 
 .modal-content {
-  background-color: white;
+  background-color: #ffffff;
   padding: 20px;
   border-radius: 10px;
   width: 400px;
   text-align: left;
-  color: black;
+  color: #000000;
 }
 
 .close-button {
-  color: black;
+  color: #000000;
   float: right;
   font-size: 28px;
   font-weight: bold;
@@ -53,6 +57,10 @@
   text-align: center;
 }
 
+.left-panel h2 {
+  margin-bottom: 20px;
+}
+
 .upload-section {
   margin-top: 20px;
 }
@@ -61,35 +69,42 @@
   border: 2px dashed #444;
   padding: 20px;
   text-align: center;
+  margin-bottom: 20px;
+  background-color: rgb(166, 191, 192);
+  color: black;
 }
 
 .drop-box p {
   margin: 0;
 }
 
-.custom-file-upload {
-  position: relative;
-  overflow: hidden;
-  display: inline-block;
+.drop-box input[type="file"] {
+  display: none;
 }
 
-.custom-file-upload input[type="file"] {
-  font-size: 100px;
-  position: absolute;
-  left: 0;
-  top: 0;
-  opacity: 0;
-}
-
-.custom-file-upload button {
+.drop-box label {
   background-color: #3b3b3d;
   border: none;
   padding: 10px;
   cursor: pointer;
+  display: inline-block;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.drop-box button {
+  background-color: #3b3b3d;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  color: white;
+  margin-top: 10px;
 }
 
 .file-list {
   margin-top: 20px;
+  overflow-y: auto;
+  max-height: 200px;
 }
 
 .file-item {
@@ -97,14 +112,22 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
+  background-color: #3b3b3d;
+  padding: 10px;
+  border-radius: 5px;
 }
 
-.process-button {
-  margin-top: 20px;
-  padding: 10px;
-  background-color: #3b3b3d;
+.file-item p {
+  margin: 0;
+}
+
+.file-item button {
+  background-color: #e74c3c;
   border: none;
+  padding: 5px 10px;
   cursor: pointer;
+  color: white;
+  border-radius: 3px;
 }
 
 .main-panel {
@@ -112,43 +135,75 @@
   padding: 20px;
 }
 
+.main-panel h1 {
+  margin-bottom: 20px;
+}
+
+.query-input-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .query-input {
-  width: 100%;
+  flex-grow: 1;
   padding: 10px;
-  margin-top: 20px;
   background-color: #3b3b3d;
   border: none;
   color: white;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  /* width: 100%; */
+}
+
+.submit-button {
+  padding: 10px 20px;
+  background-color: #1e90ff;
+  border: none;
+  cursor: pointer;
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover,
+.clear-button:hover {
+  background-color: #1c86ee;
+}
+
+.clear-button {
+  padding: 10px 20px;
+  background-color: #1e90ff;
+  border: none;
+  cursor: pointer;
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+  margin-top: 20px;
 }
 
 .response-section {
   margin-top: 20px;
-}
-
-.query,
-.response {
+  background-color: #1c1c1e;
   padding: 20px;
-  background-color: #2c2c2e;
-  margin-top: 10px;
   border-radius: 10px;
-}
-
-.response-section {
-  overflow-y: auto;
-  max-height: 400px;
-  padding: 50px;
-  /* border: 1px solid #ccc; */
-  color: #1c1c1e;
+  position: relative;
 }
 
 .query-response {
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 4px;
+  background-color: #2c2c2e;
 }
 
 .query {
-  background-color: #d1e7dd; /* Light green for queries */
+  background-color: #7ac5f0; /* Light blue for queries */
   padding: 10px;
   border-radius: 4px;
   margin-bottom: 5px;
@@ -159,4 +214,22 @@
   padding: 10px;
   border-radius: 4px;
   margin-bottom: 5px;
+  color: #000000;
+}
+
+.custom-file-upload {
+  background-color: #3d3c3b;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  display: inline-block;
+  margin-bottom: 10px;
+  color: white;
+  border-radius: 30px;
+}
+
+.clear-button-div {
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }

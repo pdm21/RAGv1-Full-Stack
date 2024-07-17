@@ -6,7 +6,6 @@ function App() {
   const [files, setFiles] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [query, setQuery] = useState("");
-  // const [response, setResponse] = useState("");
   const [messages, setMessages] = useState([]); // state to keep track of conversation history
 
   const handleFileUpload = (event) => {
@@ -50,7 +49,6 @@ function App() {
   const handleQuery = async () => {
     try {
       const response = await api.post("/query/", { query });
-      // setResponse(response.data.response || response.data.error);
       setMessages((prevMessages) => [
         ...prevMessages,
         { query, response: response.data.response || response.data.error },
@@ -60,10 +58,7 @@ function App() {
       console.error("Error fetching query:", error);
     }
   };
-  /*
-As of now, just copy pasted handleQuery code.
-a) Check what HTTP operations is warranted (post, put, etc)
-*/
+
   const handleClear = async () => {
     try {
       const response = await api.post("/clearfiles/");
@@ -76,12 +71,19 @@ a) Check what HTTP operations is warranted (post, put, etc)
   return (
     <div className="app">
       <div className="left-panel">
-        <h2>Your documents</h2>
+        <h2>Your Documents</h2>
         <div className="upload-section">
           <div className="drop-box">
             <p>Drag and drop files here</p>
-            <input type="file" onChange={handleFileUpload} multiple />
-            <button onClick={handleSubmit}>Upload</button>
+            <input
+              type="file"
+              id="fileUpload"
+              onChange={handleFileUpload}
+              multiple
+            />
+            <label htmlFor="fileUpload" className="custom-file-upload">
+              Browse Files
+            </label>
           </div>
           <div className="file-list">
             {files.map((file, index) => (
@@ -92,29 +94,28 @@ a) Check what HTTP operations is warranted (post, put, etc)
               </div>
             ))}
           </div>
+          <div className="upload-button">
+            <button onClick={handleSubmit}>Upload</button>
+          </div>
         </div>
       </div>
-      <div className="main-panel">
-        <h1>Chat with multiple PDFs 📚</h1>
-        <input
-          type="text"
-          placeholder="Enter a query here..."
-          className="query-input"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <button onClick={handleQuery}>Submit</button>
-        <button classname="clear-button" onClick={handleClear}>
-          Clear
-        </button>
 
-        {/* <div className="response-section">
-          {response && (
-            <div className="query-response">
-              <p>{response}</p>
-            </div>
-          )}
-        </div> */}
+      <div className="main-panel">
+        <h1>PDF Document Assistant</h1>
+        <div className="query-input-container">
+          <input
+            type="text"
+            placeholder="Enter a query here..."
+            className="query-input"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <div className="button-container">
+            <button className="submit-button" onClick={handleQuery}>
+              Submit
+            </button>
+          </div>
+        </div>
         <div
           className="response-section"
           style={{ overflowY: "scroll", height: "400px" }}
@@ -134,6 +135,11 @@ a) Check what HTTP operations is warranted (post, put, etc)
             </div>
           ))}
         </div>
+        <div className="clear-button-div">
+          <button className="clear-button" onClick={handleClear}>
+            Clear
+          </button>
+        </div>
       </div>
       <div className="info-icon" onClick={toggleModal}>
         ℹ️
@@ -145,8 +151,17 @@ a) Check what HTTP operations is warranted (post, put, etc)
               &times;
             </span>
             <h2>About This Application</h2>
-            <p>This application was created by Pandelis D. Margaronis.</p>
-            <p>Use Case: To upload and query multiple PDF documents.</p>
+            <p>This application was created by Pandelis Margaronis.</p>
+            <p>
+              Use Case: LLMs are known for hallucinating results when provided
+              with PDF files, whether that involves overlooking user-provided
+              context or allowing pre-trained data to influence responses. This
+              application aims to solve this problem by utilizing the Retrieval
+              Augmented Generation (RAG) techinique. The user may upload and
+              query multiple PDF documents, receiving output that is grounded
+              solely on the input provided, with the tool providing direct
+              citations for all its generated content.
+            </p>
             <p>Steps to Use:</p>
             <ol>
               <li>
@@ -155,6 +170,10 @@ a) Check what HTTP operations is warranted (post, put, etc)
               <li>Click "Upload" to upload the documents.</li>
               <li>Enter your query in the search box and click "Submit".</li>
               <li>View the results in the response section.</li>
+              <li>
+                To start a new conversation with new docs, click "Clear" to
+                reset the tool.
+              </li>
             </ol>
           </div>
         </div>
