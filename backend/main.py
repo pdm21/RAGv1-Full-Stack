@@ -28,9 +28,16 @@ s3_client = boto3.client(
 )
 
 # Set up CORS
+# Set up CORS
+# origins = [
+#     "http://localhost:3000",  # Keep this if you are testing locally
+#     "http://44.202.55.152",   # Replace with your frontend's IP or domain
+#     "https://docu-dive.com/",  # If using a custom domain
+# ]
 origins = [
-    "http://localhost:3000",
+    "https://docu-dive.com",  # If using a custom domain
 ]
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -77,25 +84,6 @@ async def upload_file(files: List[UploadFile] = File(...)):
         return {"error": "Incomplete credentials provided"}
     except Exception as e:
         return {"error": str(e)}
-
-# @app.post("/uploadfile/")
-# async def upload_file(file: UploadFile = File(...)):
-#     try:
-#         # Print file details for debugging
-#         print(f"File received: filename={file.filename}, content_type={file.content_type}")
-
-#         # Check if file.file is not None
-#         if file.file:
-#             s3_client.upload_fileobj(file.file, AWS_S3_BUCKET_NAME, file.filename)
-#             return {"info": f"file '{file.filename}' saved at '{AWS_S3_BUCKET_NAME}'"}
-#         else:
-#             return {"error": "File object is None"}
-#     except NoCredentialsError:
-#         return {"error": "Credentials not available"}
-#     except PartialCredentialsError:
-#         return {"error": "Incomplete credentials provided"}
-#     except Exception as e:
-#         return {"error": str(e)}
     
 
 @app.post("/populate_db/")
@@ -146,4 +134,4 @@ async def clearfiles():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
