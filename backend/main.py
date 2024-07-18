@@ -51,7 +51,7 @@ app.add_middleware(
 def read_root():
     return {"message": "Hello, world!"}
 
-@app.get("/getallfiles")
+@app.get("/getallfiles/")
 async def get_all_files():
     try:
         res = s3_client.list_objects_v2(Bucket=AWS_S3_BUCKET_NAME)
