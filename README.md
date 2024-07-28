@@ -28,7 +28,14 @@ COPY . .
 RUN npm install
 CMD ["npm", "start"]
 ```
-
+```docker
+# Example Dockerfile for backend
+FROM python:3.9
+WORKDIR /app
+COPY . .
+RUN pip install -r requirements.txt
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+```
 
 ### Build Docker Images:
 - Use the Dockerfiles to build images for the frontend and backend.
@@ -102,3 +109,7 @@ server {
 ### Run Docker Containers on EC2:
 - Run the Docker containers on the EC2 instance
 - Do this for both the frontend and backend applications.
+```bash
+docker run -d -p 3000:3000 --name frontend-container 975050029509.dkr.ecr.us-east-1.amazonaws.com/frontend-repo:latest
+docker run -d -p 8000:8000 --name backend-container 975050029509.dkr.ecr.us-east-1.amazonaws.com/backend-repo:latest
+```
