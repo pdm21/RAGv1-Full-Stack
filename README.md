@@ -15,7 +15,7 @@ This document outlines the step-by-step process for deploying a full-stack appli
 - Domain configured in Route 53
 
 ## Step-by-Step Deployment Process
-Prepare Python Files:
+### Prepare Python Files:
 - Organize all your Python backend files, including main.py and any supporting scripts like query.py.
 Create Dockerfiles:
 - Create Dockerfiles for both the frontend and backend applications.
