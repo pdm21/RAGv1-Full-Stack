@@ -20,6 +20,10 @@ This document outlines the step-by-step process for deploying a full-stack appli
 ### Create Dockerfiles:
 - Create Dockerfiles for both the frontend and backend applications.
 - The Dockerfiles specify the environment and dependencies needed for each component.
+'''
+docker build --platform linux/amd64 -t frontend-image .
+docker build --platform linux/amd64 -t backend-image .
+'''
 ### Build Docker Images:
 - Use the Dockerfiles to build images for the frontend and backend.
 - Ensure the correct platform is specified during the build process.
