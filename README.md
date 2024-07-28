@@ -20,29 +20,85 @@ This document outlines the step-by-step process for deploying a full-stack appli
 ### Create Dockerfiles:
 - Create Dockerfiles for both the frontend and backend applications.
 - The Dockerfiles specify the environment and dependencies needed for each component.
+```docker
+# Example Dockerfile for frontend
+FROM node:14
+WORKDIR /app
+COPY . .
+RUN npm install
+CMD ["npm", "start"]
+```
+
+
+### Build Docker Images:
+- Use the Dockerfiles to build images for the frontend and backend.
+- Ensure the correct platform is specified during the build process.
 ```bash
 docker build --platform linux/amd64 -t frontend-image .
 docker build --platform linux/amd64 -t backend-image .
 ```
-### Build Docker Images:
-- Use the Dockerfiles to build images for the frontend and backend.
-- Ensure the correct platform is specified during the build process.
 ### Push Docker Images to AWS ECR:
 - Create ECR repositories for the frontend and backend if they don't exist.
 - Tag and push the Docker images to the respective ECR repositories.
+```bash
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account_id>.dkr.ecr.us-east-1.amazonaws.com
+docker tag frontend-image:latest <account_id>.dkr.ecr.us-east-1.amazonaws.com/frontend-repo:latest
+docker push <account_id>.dkr.ecr.us-east-1.amazonaws.com/frontend-repo:latest
+docker tag backend-image:latest <account_id>.dkr.ecr.us-east-1.amazonaws.com/backend-repo:latest
+docker push <account_id>.dkr.ecr.us-east-1.amazonaws.com/backend-repo:latest
+```
 ### Set Up ECS Cluster:
 - Create an ECS cluster to manage the Docker containers.
 ### Register ECS Task Definitions:
 - Create task definitions for the frontend and backend services using JSON configuration files.
 - These definitions specify how the containers should be run within ECS.
+```bash
+aws ecs register-task-definition --cli-input-json file://frontend-task-definition.json
+aws ecs register-task-definition --cli-input-json file://backend-task-definition.json
+```
 ### Create ECS Services:
 - Create ECS services for the frontend and backend tasks.
 - Ensure the services are configured to run the correct number of tasks and are properly networked.
+```bash
+aws ecs create-service --cluster docu-dive-cluster --service-name frontend-service --task-definition frontend-task --desired-count 1 --launch-type FARGATE
+aws ecs create-service --cluster docu-dive-cluster --service-name backend-service --task-definition backend-task --desired-count 1 --launch-type FARGATE
+```
 ### Set Up EC2 Instance:
 - Launch an EC2 instance to host the Nginx server.
 - Configure security groups to allow necessary traffic.
 ### Deploy Nginx Configuration:
 - Configure Nginx as a reverse proxy to route traffic to the frontend and backend services.
+```nginx
+server {
+    listen 80;
+    server_name docu-dive.com www.docu-dive.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name docu-dive.com www.docu-dive.com;
+
+    ssl_certificate /etc/letsencrypt/live/docu-dive.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/docu-dive.com/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:3000;  # Frontend
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /api {
+        proxy_pass http://localhost:8000;  # Backend
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
 ### Run Docker Containers on EC2:
 - Run the Docker containers on the EC2 instance
 - Do this for both the frontend and backend applications.
