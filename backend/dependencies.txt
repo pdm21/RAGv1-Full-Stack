@@ -1,5 +1,12 @@
 pypdf
 langchain
+langchain_community
 chromadb
 pytest
 boto3
+fastapi
+uvicorn
+pydantic
+requests
+aiohttp
+openai

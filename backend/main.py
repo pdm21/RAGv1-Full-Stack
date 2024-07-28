@@ -36,6 +36,8 @@ s3_client = boto3.client(
 # ]
 origins = [
     "https://docu-dive.com",  # If using a custom domain
+    "http://www.docu-dive.com",
+    "http://localhost:3000",
 ]
 
 
@@ -51,7 +53,7 @@ app.add_middleware(
 def read_root():
     return {"message": "Hello, world!"}
 
-@app.get("/getallfiles/")
+@app.get("/api/getallfiles/")
 async def get_all_files():
     try:
         res = s3_client.list_objects_v2(Bucket=AWS_S3_BUCKET_NAME)
@@ -63,7 +65,7 @@ async def get_all_files():
     except Exception as e:
         return {"error": str(e)}
 
-@app.post("/uploadfile/")
+@app.post("/api/uploadfile/")
 async def upload_file(files: List[UploadFile] = File(...)):
     try:
         # Iterate over each file and upload it to S3
@@ -86,7 +88,7 @@ async def upload_file(files: List[UploadFile] = File(...)):
         return {"error": str(e)}
     
 
-@app.post("/populate_db/")
+@app.post("/api/populate_db/")
 async def populate_db(reset: bool = False):
     try:
         command = ["python3", "pop_db.py"]
@@ -103,7 +105,7 @@ async def populate_db(reset: bool = False):
 class QueryRequest(BaseModel):
     query: str
 
-@app.post("/query/")
+@app.post("/api/query/")
 async def query(request: QueryRequest):
     try:
         command = ["python3", "query.py", request.query]
@@ -112,14 +114,10 @@ async def query(request: QueryRequest):
             raise HTTPException(status_code=500, detail=result.stderr)
         return {"response": result.stdout}
     except Exception as e:
+        print(f"Error: {e}")  # Add logging for debugging
         raise HTTPException(status_code=500, detail=str(e))
 
-"""
-Experimental: Post API Request to Clear DB, Clear S3
-See clearfiles.py file for code.
-See AWS docs here: https://docs.aws.amazon.com/AmazonS3/latest/userguide/DeletingObjects.html
-"""
-@app.post("/clearfiles/")
+@app.post("/api/clearfiles/")
 async def clearfiles():
     try:
         command = ["python3", "clearfiles.py"]

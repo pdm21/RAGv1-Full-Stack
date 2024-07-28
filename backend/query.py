@@ -1,9 +1,15 @@
 import argparse
 from langchain_community.vectorstores import Chroma  # Updated import
 from langchain.prompts import ChatPromptTemplate
-from langchain_community.llms.ollama import Ollama
+from openai import OpenAI
+import os
 
 from get_embeddings import get_embedding_function
+
+# Load the API key from the environment variable
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY")
+)
 
 CHROMA_PATH = "chroma"
 
@@ -38,15 +44,23 @@ def query_rag(query_text: str):
     prompt = prompt_template.format(context=context_text, question=query_text)
     # print(prompt)
 
-    model = Ollama(model="mistral")
-    response_text = model.invoke(prompt)
+    # model = Ollama(model="mistral")
+    # Update the Ollama instance to point to the correct URL
+    # model = Ollama(base_url="http://ollama-container:11434/api/generate", model="mistral")
 
-    
-    # Source Adjustments:
-    # - add footnotes
-    # - cite footnotes at the bottom
-    # - maybe do not cite the entire source, or at least leave some space
-    
+    # response_text = model.invoke(prompt)
+
+    # Call the OpenAI model
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant. Only use context from the prompt to generate your response."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=1000
+    )
+    response_text = response.choices[0].message.content.strip()
+
     sources = [doc.metadata.get("id", None) for doc, _score in results]
     formatted_response = f"{response_text}\n\nSources: {sources}"
     print(formatted_response)

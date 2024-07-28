@@ -1,0 +1,13 @@
+{
+  "serviceName": "backend-service",
+  "taskDefinition": "backend-task",
+  "desiredCount": 1,
+  "launchType": "FARGATE",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": ["subnet-00fb61f401d4dc5ad", "subnet-03d136bfbb27bd5cc"],
+      "securityGroups": ["sg-010ebd44af93350a7"],
+      "assignPublicIp": "ENABLED"
+    }
+  }
+}

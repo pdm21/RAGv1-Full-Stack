@@ -1,0 +1,42 @@
+# Ignore node_modules
+/frontend/node_modules
+
+# Ignore build directories
+/frontend/build
+
+# Ignore Python cache files
+/backend/__pycache__
+
+# Ignore Python virtual environments (if any)
+venv/
+env/
+
+# Ignore compiled Python files
+*.pyc
+
+# Ignore Docker-related files
+docker-compose.yml
+/backend/Dockerfile
+/frontend/Dockerfile
+
+# Ignore log files
+*.log
+
+# Ignore key pair files
+*.pem
+
+# Ignore shell scripts (if they are not part of the codebase)
+*.sh
+
+# Ignore data and files directories
+/backend/data
+
+# Ignore dependencies files
+/backend/dependencies.txt
+
+# Ignore Nginx configuration
+/frontend/nginx.conf
+
+# Ignore miscellaneous files
+*.tmp
+*.temp
