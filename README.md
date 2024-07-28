@@ -110,6 +110,6 @@ server {
 - Run the Docker containers on the EC2 instance
 - Do this for both the frontend and backend applications.
 ```bash
-docker run -d -p 3000:3000 --name frontend-container 975050029509.dkr.ecr.us-east-1.amazonaws.com/frontend-repo:latest
-docker run -d -p 8000:8000 --name backend-container 975050029509.dkr.ecr.us-east-1.amazonaws.com/backend-repo:latest
+docker run -d -p 3000:3000 --name frontend-container <account_id>.dkr.ecr.us-east-1.amazonaws.com/frontend-repo:latest
+docker run -d -p 8000:8000 --name backend-container <account_id>.dkr.ecr.us-east-1.amazonaws.com/backend-repo:latest
 ```
