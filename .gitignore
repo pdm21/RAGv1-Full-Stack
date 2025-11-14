@@ -40,3 +40,5 @@ docker-compose.yml
 # Ignore miscellaneous files
 *.tmp
 *.temp
+
+.env
